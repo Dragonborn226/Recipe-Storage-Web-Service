@@ -121,4 +121,67 @@ Input is validated before anything is saved. Bad requests never crash the server
 - [ ] Stop and restart the server, then confirm all data is still there
 
 ## Automated Testing
-`app.js` exports the Express app without starting the server, so tests can use it directly with a testing library such as Jest and Supertest against a test database.
+
+The project includes automated smoke and regression tests to verify the application's core functionality, frontend behavior, and REST API. The tests use Node.js's built-in test runner, Selenium WebDriver, and HTTP requests.
+
+### Prerequisites
+
+- Node.js and npm installed
+- Project dependencies installed using `npm install`
+- Mozilla Firefox installed for Selenium browser tests
+- The application server running locally
+- MongoDB Atlas configured and accessible through the project's environment variables
+
+### Running the Tests
+
+Start the application in one terminal:
+
+```bash
+npm.cmd start
+```
+
+Keep the server running while executing the tests in a separate terminal.
+
+**Smoke tests**
+
+Smoke tests provide a quick check that the application's essential functionality is working.
+
+```bash
+node --test selenium/smoke.test.js
+```
+
+**Regression tests**
+
+Regression tests provide broader coverage of the frontend, database persistence, and REST API.
+
+```bash
+node --test selenium/regression.test.js
+```
+
+### Smoke Test Coverage
+
+Smoke tests are intended to verify that the application launches successfully and that its essential functionality is available. Refer to `selenium/smoke.test.js` for the specific checks implemented.
+
+### Regression Test Coverage
+
+The regression suite checks the following behaviors:
+
+- **Recipe management:** Creating, editing, viewing, and deleting recipes through the interface and API.
+- **Persistence:** Confirming that saved recipes remain available after a page refresh.
+- **Form validation:** Checking that incomplete recipe submissions are rejected.
+- **API validation:** Testing missing required fields, malformed IDs, nonexistent records, and invalid author or category references.
+- **Duplicate records:** Verifying that duplicate usernames, email addresses, and category names return HTTP 409 responses.
+- **Filtering and search:** Checking recipe search and filtering by author or category.
+- **Error handling:** Verifying appropriate responses for invalid requests and unknown API routes.
+- **Health endpoint:** Checking that the API health endpoint responds successfully.
+- **Deletion confirmation:** Ensuring canceled deletions preserve recipes and confirmed deletions remove them.
+
+### Test Data and Cleanup
+
+The regression suite uses a unique prefix for test data to reduce conflicts with existing records. Test recipes are deleted during cleanup, including when a test fails after creating a recipe. Test authors and categories may remain in the database if the suite creates them.
+
+Run the tests against a development or dedicated test database rather than production data. Review any remaining test records and remove them when necessary.
+
+### Interpreting Results
+
+A passing test suite indicates that the tested behaviors worked under the conditions of that run. It does not guarantee that every possible error, performance issue, or security vulnerability has been identified.
